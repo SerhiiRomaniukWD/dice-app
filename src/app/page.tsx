@@ -16,10 +16,12 @@ import RadioBtn from "../components/radio";
 import Slider from "../components/slider";
 import { ResultItem } from "../types/result";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import CustomAlert from "../components/alert";
 
 export default function Home() {
   const [guessType, setGuessType] = useState<"under" | "over">("under");
   const [sliderValue, setSliderValue] = useState(20);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [gameHistory, setGameHistory, isLoading] = useLocalStorage<
     ResultItem[]
   >("gameHistory", []);
@@ -58,7 +60,12 @@ export default function Home() {
       resultStatus: gameNewResult,
     };
 
+    setIsAlertOpen(true);
     setGameHistory([newEntry, ...gameHistory.slice(0, 9)]);
+  };
+
+  const handleAlertClose = () => {
+    setIsAlertOpen(false);
   };
 
   return (
@@ -120,21 +127,28 @@ export default function Home() {
             variant="contained"
             sx={{
               width: "100%",
-              backgroundColor: "#9C27B0",
+              backgroundColor: "primary",
               lineHeight: "1.625rem",
               fontWeight: "semibold",
               paddingY: "0.5rem",
             }}
             onClick={handlePlay}
+						disabled={isAlertOpen}
           >
             PLAY
           </Button>
         </Box>
 
+        <CustomAlert
+          status={gameHistory[0]?.resultStatus}
+          isOpen={isAlertOpen}
+          onCloseAction={handleAlertClose}
+        />
+
         {isLoading ? (
           <CircularProgress
             size="3rem"
-            sx={{ marginTop: "3rem", color: "#9C27B0" }}
+            sx={{ marginTop: "3rem", color: "primary" }}
           />
         ) : (
           <ResultsTable results={gameHistory} />
