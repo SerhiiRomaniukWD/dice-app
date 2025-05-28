@@ -4,60 +4,13 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { ResultItem } from "../types/result";
 
-interface ResultItem {
-  id: string;
-  time: string;
-  guess: string;
-  result: number;
-}
+type Props = {
+  results: ResultItem[];
+};
 
-const results: ResultItem[] = [
-  {
-    id: "1",
-    time: "2023-10-01T12:00:00Z",
-    guess: "Under 12",
-    result: 50,
-  },
-  {
-    id: "2",
-    time: "2023-10-01T12:05:00Z",
-    guess: "Over 50",
-    result: 70,
-  },
-  {
-    id: "3",
-    time: "2023-10-01T12:00:00Z",
-    guess: "Under 12",
-    result: 50,
-  },
-  {
-    id: "4",
-    time: "2023-10-01T12:05:00Z",
-    guess: "Over 50",
-    result: 70,
-  },
-  {
-    id: "5",
-    time: "2023-10-01T12:00:00Z",
-    guess: "Under 12",
-    result: 50,
-  },
-  {
-    id: "6",
-    time: "2023-10-01T12:05:00Z",
-    guess: "Over 50",
-    result: 70,
-  },
-  {
-    id: "7",
-    time: "2023-10-01T12:00:00Z",
-    guess: "Under 12",
-    result: 50,
-  },
-];
-
-export default function ResultsTable() {
+export default function ResultsTable({ results }: Props) {
   return (
     <TableContainer
       sx={{ display: "flex", justifyContent: "center", maxWidth: "600px" }}
@@ -86,14 +39,21 @@ export default function ResultsTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {results.map((row) => (
+          {results.map((row, index) => (
             <TableRow
-              key={row.id}
+              key={`${row.time}-${index}`}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell align="left">{row.time}</TableCell>
               <TableCell align="left">{row.guess}</TableCell>
-              <TableCell align="left">{row.result}</TableCell>
+              <TableCell
+                sx={{
+                  color: row.resultStatus === "won" ? "#1B5E20" : "#C62828",
+                }}
+                align="left"
+              >
+                {row.result}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

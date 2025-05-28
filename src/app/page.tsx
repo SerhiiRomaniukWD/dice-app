@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Container,
   Box,
@@ -7,14 +8,13 @@ import {
   Paper,
   FormControl,
   RadioGroup,
-  FormControlLabel,
-  Radio,
   Slider,
   Button,
 } from "@mui/material";
 import styles from "./page.module.css";
-import { useState } from "react";
-import ResultsTable from "./table";
+import ResultsTable from "../components/table";
+import RadioBtn from "../components/radio";
+import { ResultItem } from "@/types/result";
 
 const marks = [
   { value: 0, label: "0" },
@@ -27,11 +27,63 @@ const marks = [
 
 export default function Home() {
   const [guessType, setGuessType] = useState<"under" | "over">("under");
+  const [sliderValue, setSliderValue] = useState(20);
+  const [gameResult, setGameResult] = useState<"won" | "lost">("lost");
+  const [gameHistory, setGameHistory] = useState<ResultItem[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const gameHistoryFromStorage = localStorage.getItem("gameHistory");
+      if (gameHistoryFromStorage) {
+        try {
+          setGameHistory(JSON.parse(gameHistoryFromStorage));
+        } catch {
+          setGameHistory([]);
+        }
+      }
+    }
+  }, []);
 
   const handleGuessTypeChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setGuessType(event.target.value as "under" | "over");
+  };
+  const handleSliderChange = (_event: Event, newValue: number | number[]) => {
+    setSliderValue(typeof newValue === "number" ? newValue : newValue[0]);
+  };
+  const handlePlay = () => {
+    const currentTime = new Date().toLocaleTimeString("en-GB", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    const newGuess = `${guessType === "under" ? "Under" : "Over"} ${sliderValue}`;
+    const randomResult = Math.floor(Math.random() * 101);
+
+    if (
+      (guessType === "under" && randomResult < sliderValue) ||
+      (guessType === "over" && randomResult > sliderValue)
+    ) {
+      setGameResult("won");
+    } else {
+      setGameResult("lost");
+    }
+
+    const newEntry = {
+      time: currentTime,
+      guess: newGuess,
+      result: randomResult,
+      resultStatus: gameResult,
+    };
+
+    setGameHistory([newEntry, ...gameHistory.slice(0, 9)]);
+    localStorage.setItem(
+      "gameHistory",
+      JSON.stringify([newEntry, ...gameHistory.slice(0, 9)]),
+    );
   };
 
   return (
@@ -51,9 +103,9 @@ export default function Home() {
             padding: 4,
             width: "100%",
             display: "flex",
-						flexDirection: "column",
+            flexDirection: "column",
             justifyContent: "center",
-						alignItems: "center",
+            alignItems: "center",
           }}
         >
           <Box
@@ -76,7 +128,7 @@ export default function Home() {
                 marginBottom: "1rem",
               }}
             >
-              100
+              {gameHistory[0]?.result || "0"}
             </Typography>
 
             <FormControl component="fieldset">
@@ -92,48 +144,17 @@ export default function Home() {
                 }}
                 row
               >
-                <FormControlLabel
-                  value="under"
-                  control={
-                    <Radio
-                      color="primary"
-                      sx={{
-                        color: "#9C27B0",
-                        "&.Mui-checked": {
-                          color: "#9C27B0",
-                        },
-                      }}
-                    />
-                  }
-                  labelPlacement="start"
-                  label="Under"
-                  sx={{}}
-                />
-
-                <FormControlLabel
-                  value="over"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "#9C27B0",
-                        "&.Mui-checked": {
-                          color: "#9C27B0",
-                        },
-                      }}
-                    />
-                  }
-                  labelPlacement="start"
-                  label="Over"
-                  sx={{}}
-                />
+                <RadioBtn value={"under"} label={"Under"} />
+                <RadioBtn value={"over"} label={"Over"} />
               </RadioGroup>
             </FormControl>
 
             <Slider
+              value={sliderValue}
+              onChange={handleSliderChange}
               aria-label="Temperature"
               defaultValue={20}
               valueLabelDisplay="auto"
-              shiftStep={30}
               marks={marks}
               min={0}
               max={100}
@@ -155,12 +176,13 @@ export default function Home() {
                 fontWeight: "semibold",
                 paddingY: "0.5rem",
               }}
+              onClick={handlePlay}
             >
               PLAY
             </Button>
           </Box>
 
-					<ResultsTable />
+          <ResultsTable results={gameHistory} />
         </Paper>
       </Container>
     </div>
