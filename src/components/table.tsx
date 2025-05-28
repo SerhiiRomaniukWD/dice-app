@@ -5,6 +5,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { ResultItem } from "../types/result";
+import { Box } from "@mui/material";
 
 type Props = {
   results: ResultItem[];
@@ -12,9 +13,7 @@ type Props = {
 
 export default function ResultsTable({ results }: Props) {
   return (
-    <TableContainer
-      sx={{ display: "flex", justifyContent: "center", maxWidth: "600px" }}
-    >
+    <TableContainer sx={{ maxWidth: "600px" }}>
       <Table size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>

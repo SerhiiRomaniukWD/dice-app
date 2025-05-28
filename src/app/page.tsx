@@ -5,25 +5,15 @@ import {
   Container,
   Box,
   Typography,
-  Paper,
   FormControl,
   RadioGroup,
-  Slider,
   Button,
 } from "@mui/material";
 import styles from "./page.module.css";
 import ResultsTable from "../components/table";
 import RadioBtn from "../components/radio";
 import { ResultItem } from "@/types/result";
-
-const marks = [
-  { value: 0, label: "0" },
-  { value: 20 },
-  { value: 40 },
-  { value: 60 },
-  { value: 80 },
-  { value: 100, label: "100" },
-];
+import Slider from "@/components/slider";
 
 export default function Home() {
   const [guessType, setGuessType] = useState<"under" | "over">("under");
@@ -95,97 +85,79 @@ export default function Home() {
         sx={{
           minHeight: "100vh",
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 4,
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          sx={{ maxWidth: 320, width: "100%", marginBottom: "1rem" }}
         >
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            sx={{ maxWidth: 320, width: "100%", marginBottom: "1rem" }}
+          <Typography
+            variant="body1"
+            sx={{
+              height: 200,
+              width: "100%",
+              backgroundColor: "#f5f5f5",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "6rem",
+              fontWeight: "light",
+              marginBottom: "1rem",
+            }}
           >
-            <Typography
-              variant="body1"
+            {gameHistory[0]?.result || "0"}
+          </Typography>
+
+          <FormControl component="fieldset">
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              value={guessType}
+              onChange={handleGuessTypeChange}
               sx={{
-                height: 200,
-                width: "100%",
-                backgroundColor: "#f5f5f5",
                 display: "flex",
-                alignItems: "center",
                 justifyContent: "center",
-                fontSize: "6rem",
-                fontWeight: "light",
-                marginBottom: "1rem",
-              }}
-            >
-              {gameHistory[0]?.result || "0"}
-            </Typography>
-
-            <FormControl component="fieldset">
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                value={guessType}
-                onChange={handleGuessTypeChange}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "1rem",
-                  marginBottom: "2rem",
-                }}
-                row
-              >
-                <RadioBtn value={"under"} label={"Under"} />
-                <RadioBtn value={"over"} label={"Over"} />
-              </RadioGroup>
-            </FormControl>
-
-            <Slider
-              value={sliderValue}
-              onChange={handleSliderChange}
-              aria-label="Temperature"
-              defaultValue={20}
-              valueLabelDisplay="auto"
-              marks={marks}
-              min={0}
-              max={100}
-              sx={{
-                color: "#9C27B0",
-                "& .MuiSlider-thumb": { borderColor: "#d9ade1" },
-                "& .MuiSlider-mark": { backgroundColor: "#9C27B0" },
-                "& .MuiSlider-markLabel": { color: "#666666" },
+                gap: "1rem",
                 marginBottom: "2rem",
               }}
-            />
-
-            <Button
-              variant="contained"
-              sx={{
-                width: "100%",
-                backgroundColor: "#9C27B0",
-                lineHeight: "1.625rem",
-                fontWeight: "semibold",
-                paddingY: "0.5rem",
-              }}
-              onClick={handlePlay}
+              row
             >
-              PLAY
-            </Button>
-          </Box>
+              <RadioBtn value={"under"} label={"Under"} />
+              <RadioBtn value={"over"} label={"Over"} />
+            </RadioGroup>
+          </FormControl>
 
-          <ResultsTable results={gameHistory} />
-        </Paper>
+          <Slider value={sliderValue} onChange={handleSliderChange} />
+
+          <Button
+            variant="contained"
+            sx={{
+              width: "100%",
+              backgroundColor: "#9C27B0",
+              lineHeight: "1.625rem",
+              fontWeight: "semibold",
+              paddingY: "0.5rem",
+            }}
+            onClick={handlePlay}
+          >
+            PLAY
+          </Button>
+        </Box>
+
+        <Box
+          sx={{
+            minHeight: "24.2rem",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          {gameHistory.length > 0 && <ResultsTable results={gameHistory} />}
+        </Box>
       </Container>
     </div>
   );
