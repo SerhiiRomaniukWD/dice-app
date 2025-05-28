@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Container,
   Box,
@@ -8,33 +8,21 @@ import {
   FormControl,
   RadioGroup,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import styles from "./page.module.css";
 import ResultsTable from "../components/table";
 import RadioBtn from "../components/radio";
-import { ResultItem } from "@/types/result";
-import Slider from "@/components/slider";
+import Slider from "../components/slider";
+import { ResultItem } from "../types/result";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export default function Home() {
   const [guessType, setGuessType] = useState<"under" | "over">("under");
   const [sliderValue, setSliderValue] = useState(20);
-  const [gameResult, setGameResult] = useState<"won" | "lost">("lost");
-  const [gameHistory, setGameHistory] = useState<ResultItem[]>([]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const gameHistoryFromStorage = localStorage.getItem("gameHistory");
-
-      if (gameHistoryFromStorage) {
-        try {
-          const parsed = JSON.parse(gameHistoryFromStorage);
-          setGameHistory(Array.isArray(parsed) ? parsed.filter(Boolean) : []);
-        } catch {
-          setGameHistory([]);
-        }
-      }
-    }
-  }, []);
+  const [gameHistory, setGameHistory, isLoading] = useLocalStorage<
+    ResultItem[]
+  >("gameHistory", []);
 
   const handleGuessTypeChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -54,28 +42,23 @@ export default function Home() {
 
     const newGuess = `${guessType === "under" ? "Under" : "Over"} ${sliderValue}`;
     const randomResult = Math.floor(Math.random() * 101);
+    let gameNewResult: "won" | "lost" = "lost";
 
     if (
       (guessType === "under" && randomResult < sliderValue) ||
       (guessType === "over" && randomResult > sliderValue)
     ) {
-      setGameResult("won");
-    } else {
-      setGameResult("lost");
+      gameNewResult = "won";
     }
 
     const newEntry = {
       time: currentTime,
       guess: newGuess,
       result: randomResult,
-      resultStatus: gameResult,
+      resultStatus: gameNewResult,
     };
 
     setGameHistory([newEntry, ...gameHistory.slice(0, 9)]);
-    localStorage.setItem(
-      "gameHistory",
-      JSON.stringify([newEntry, ...gameHistory.slice(0, 9)]),
-    );
   };
 
   return (
@@ -87,7 +70,7 @@ export default function Home() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          py: "7rem",
         }}
       >
         <Box
@@ -110,7 +93,7 @@ export default function Home() {
               marginBottom: "1rem",
             }}
           >
-            {gameHistory[0]?.result || "0"}
+            {gameHistory[0]?.result || "Play"}
           </Typography>
 
           <FormControl component="fieldset">
@@ -148,16 +131,14 @@ export default function Home() {
           </Button>
         </Box>
 
-        <Box
-          sx={{
-            minHeight: "24.2rem",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          {gameHistory.length > 0 && <ResultsTable results={gameHistory} />}
-        </Box>
+        {isLoading ? (
+          <CircularProgress
+            size="3rem"
+            sx={{ marginTop: "3rem", color: "#9C27B0" }}
+          />
+        ) : (
+          <ResultsTable results={gameHistory} />
+        )}
       </Container>
     </div>
   );

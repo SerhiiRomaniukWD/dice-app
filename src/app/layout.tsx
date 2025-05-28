@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import "./globals.css";
+import HydrationGuard from "../components/guard";
 
 const robotSans = Roboto({
   variable: "--font-roboto-sans",
@@ -21,7 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${robotSans.variable}`}>
-        <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
+        <AppRouterCacheProvider>
+          <HydrationGuard>{children}</HydrationGuard>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );
