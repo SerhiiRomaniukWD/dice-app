@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import styles from "./page.module.css";
 import { useState } from "react";
+import ResultsTable from "./table";
 
 const marks = [
   { value: 0, label: "0" },
@@ -50,14 +51,16 @@ export default function Home() {
             padding: 4,
             width: "100%",
             display: "flex",
+						flexDirection: "column",
             justifyContent: "center",
+						alignItems: "center",
           }}
         >
           <Box
             display="flex"
             flexDirection="column"
             alignItems="center"
-            sx={{ maxWidth: 320, width: "100%" }}
+            sx={{ maxWidth: 320, width: "100%", marginBottom: "1rem" }}
           >
             <Typography
               variant="body1"
@@ -149,13 +152,15 @@ export default function Home() {
                 width: "100%",
                 backgroundColor: "#9C27B0",
                 lineHeight: "1.625rem",
-								fontWeight: "semibold",
+                fontWeight: "semibold",
                 paddingY: "0.5rem",
               }}
             >
               PLAY
             </Button>
           </Box>
+
+					<ResultsTable />
         </Paper>
       </Container>
     </div>
