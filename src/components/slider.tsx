@@ -26,9 +26,9 @@ export default function Slider({ value, onChange }: Props) {
       min={0}
       max={100}
       sx={{
-        color: "#9C27B0",
-        "& .MuiSlider-thumb": { borderColor: "#d9ade1" },
-        "& .MuiSlider-mark": { backgroundColor: "#9C27B0" },
+        color: "primary",
+        "& .MuiSlider-thumb": { borderColor: "primary.light" },
+        "& .MuiSlider-mark": { backgroundColor: "primary" },
         "& .MuiSlider-markLabel": { color: "#666666" },
         marginBottom: "2rem",
       }}

@@ -13,9 +13,9 @@ export default function RadioBtn({ value, label }: Props) {
         <Radio
           color="primary"
           sx={{
-            color: "#9C27B0",
+            color: "primary",
             "&.Mui-checked": {
-              color: "#9C27B0",
+              color: "primary",
             },
           }}
         />
