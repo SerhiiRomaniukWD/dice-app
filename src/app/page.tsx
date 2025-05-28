@@ -34,9 +34,11 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const gameHistoryFromStorage = localStorage.getItem("gameHistory");
+
       if (gameHistoryFromStorage) {
         try {
-          setGameHistory(JSON.parse(gameHistoryFromStorage));
+          const parsed = JSON.parse(gameHistoryFromStorage);
+          setGameHistory(Array.isArray(parsed) ? parsed.filter(Boolean) : []);
         } catch {
           setGameHistory([]);
         }
